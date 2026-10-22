@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Scroll</title>
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      max-height: 100vh;
+      overflow: hidden;
+      background-image: url('purple bg 1.jpeg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: -1;
+    }
+    * { box-sizing: border-box; }
+    
+    .centered {
+      margin: auto;
+      width: max-content;
+    }
+    
+    .flipbook {
+      margin: 3em auto;
+      width: 800px;
+      height: 500px;
+      position: relative;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    .leaf {
+      position: absolute;
+      transform-style: preserve-3d;
+      height: 100%;
+      width: 50%;
+      background-color: #fff;
+      left: 50%;
+      transition: transform 1s;
+      transform: rotate3d(0, 1, 0, 0deg);
+      transform-origin: left 0px;
+      border: 1px solid #000;
+      background-color: #0000 !important;
+    }
+    
+    .page {
+      transform-style: preserve-3d;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .front {
+      transform: rotate3d(0, 1, 0, 0deg) translate3d(0, 0, 0.1px);
+      border-radius: 0em 1em 1em 0;
+    }
+    .front:not(.external) {
+      box-shadow: inset 5px 0px 5px -5px #0005;
+    }
+    
+    .back {
+      transform: rotate3d(0, 1, 0, 180deg) translate3d(0, 0, 0.1px);
+      border-radius: 1em 0em 0em 1em;
+    }
+    .back:not(.external) {
+      box-shadow: inset -5px 0px 5px -5px #0005;
+    }
+    
+    .turned { transform: rotateY(180deg); }
+    .disabled { user-select: none; opacity: 0.6; }
+    
+    .title {
+      text-align: center;
+      width: 100%;
+      padding: 0em !important;
+      padding-top: 2em;
+    }
+    
+    .pageNumber {
+      font-size: 0.75em;
+      position: absolute;
+      bottom: 0.5em;
+      font-family: serif;
+    }
+    .front .pageNumber { right: 0.75em; }
+    .back .pageNumber { left: 0.75em; }
+    
+    .contents-row {
+      display: flex;
+      flex-flow: row nowrap;
+    }
+    .contents-row .spacer {
+      flex: 1 1;
+      height: 1em;
+      border-bottom: 1px dashed #000;
+    }
+    .contents-row .text { flex: 0 0 auto; }
+    
+    h1, h2, h3 {
+      font-family: cursive;
+      margin-bottom: 5px;
+    }
+    p {
+      font-size: 14px;
+      margin: 4px 0;
+      line-height: 1.4;
+    }
+    
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .controls button {
+      margin: 0 10px;
+      padding: 10px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      color: white;
+      background: #61014c80;
+      border-radius: 5px;
+      border: 2px solid rgba(245, 189, 5, 0.5);
+      box-shadow: rgba(0, 0, 0, 0.3);
+      transition: 0.3s;
+    }
+    .controls button:hover { background: #b90d8e; }
+
+    /* 📸 PICTURE LAYOUT */
+    .image-container {
+      width: 100%;
+      height: 320px; /* Keeps images a good size above the text */
+      padding: 15px 15px 5px 15px; 
+      overflow: hidden;
+    }
+    
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; 
+      border-radius: 5px;
+      border: 2px solid rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .text-container {
+      width: 100%;
+      flex: 1;
+      padding: 5px 20px 15px 20px;
+      overflow-y: auto;
+    }
+    
+    .hidden { opacity: 0; pointer-events: none; }
+    
+    #rightButton {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 10px;
+      z-index: 50;
+    }
+
+    /* Responsive scaling for phones */
+    @media (max-width: 850px) { .flipbook { transform: scale(0.8); margin: -50px auto; } }
+    @media (max-width: 600px) { .flipbook { transform: scale(0.55); margin: -120px auto; } .controls button { font-size: 14px; padding: 8px 15px; } }
+    @media (max-width: 400px) { .flipbook { transform: scale(0.45); margin: -150px auto; } }
+  </style>
+</head>
+<body>
+  <div class="flipbook centered" id="flipbook">
+    
+    <!-- LEAF 1 -->
+    <div class="leaf">
+      <div class="page front title external" style="background-image:url('BOOK COVER.jpg');"></div>
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">i</div>
+        <div class="text-container"></div>
+      </div>
+    </div>
+    
+    <!-- LEAF 2 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">ii</div>
+        <div class="image-container">
+          <img src="contents.jpeg" alt="contents">
+        </div>
+        <div class="text-container">
+          <h2>Contents</h2>
+          <div class="contents-row"><div class="text">Happy birthday baby</div><div class="spacer"></div><div class="text">1</div></div>
+          <div class="contents-row"><div class="text">Tis just a collecttion of my fav pics of yours hehe</div><div class="spacer"></div><div class="text">3</div></div>
+        </div>
+      </div>
+      
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">1</div>
+        <div class="image-container">
+          <img src="2.jpeg" alt="Memory 2">
+        </div>
+        <div class="text-container">
+          <h2>Oh my, your eyes</h2>
+          <p>Your eyes truly are captivating cause look at em..</p>
+          <p>How can i not get lost in those beautiful eyes and that smile of yours?</p>
+          <p>And da kwurlz were kwurling hehe</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- LEAF 3 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">2</div>
+        <div class="image-container">
+          <img src="2 replace.jpeg" alt="Memory 3">
+        </div>
+        <div class="text-container">
+          <p>Of course this is my one of my fav baby pic of yours</p>
+          <p>Honestly this is giving that you were born to be a leader and straight up stating facts while banging on the table.</p>
+          <p>Call it biased or not, if you were a politician I'd always vote you tho</p>
+        </div>
+      </div>
+      
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">3</div>
+        <div class="image-container">
+          <img src="4.jpeg" alt="Memory 4">
+        </div>
+        <div class="text-container">
+          <h2>MUAH</h2>
+          <p>I ABSOLUTELY LOVE THIS ONE CAUSE YOU DRESSED UP ALL PRETTY PRETTY FOR DIWALI AND YOU WERE LOOKING SO ADORABLY BEAUTIFUL AND AAA I JUST WANNA MUAH MUAH</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- LEAF 4 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">4</div>
+        <div class="image-container">
+          <img src="5.jpeg" alt="Memory 5">
+        </div>
+        <div class="text-container">
+          <p>And this picture right here always does something not so innocent to me. Like..oo rawr okay ma'am I am sat and will do whatever you say like a good boy.</p>
+        </div>
+      </div>
+      
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">5</div>
+        <div class="image-container">
+          <img src="6.jpeg" alt="Memory 6">
+        </div>
+        <div class="text-container">
+          <h3>Kanakamburalu, finally</h3>
+          <p>I was so happy to finally get you kanakamburalu as I know how much you love it. And you were looking so pretty wearing it that i wasn't able to take my eyes off of you. one day I'll bring you manyyyyyyy kanakamburalu hehe</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAF 5 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">6</div>
+        <div class="image-container">
+          <img src="7.jpeg" alt="Memory 7">
+        </div>
+        <div class="text-container">
+          <h2>Cute :3</h2>
+          <p>I find this so cute cause you look so clueless of what is happening hehe..it gives me the feeling of "AWWWWWWWW I WANNA PROTECT HER"</p>
+        </div>
+      </div>
+      
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">7</div>
+        <div class="image-container">
+          <img src="8.jpeg" alt="Memory 8">
+        </div>
+        <div class="text-container">
+          <p>My absolute favourite picture of yours like..look at her..Baby Mokshita..so precious..so pure. NGL i feel so much love for you when i see this pic, my eyes tear up.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAF 6 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">8</div>
+        <div class="image-container">
+          <img src="9.jpeg" alt="Memory 9">
+        </div>
+        <div class="text-container">
+          <p>Again a muah muah picture of my pretty pretty girlfren :3.</p>
+        </div>
+      </div>
+      
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">9</div>
+        <div class="image-container">
+          <img src="10.jpeg" alt="Memory 10">
+        </div>
+        <div class="text-container">
+          <p>AWWWWWWWWWWWWWWW look at the way you're looking at the camera and the nail polish on your nails. STRAIGHT UP CUTENESS AGGRESSION SO CUTE MUAH.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAF 7 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">10</div>
+        <div class="image-container">
+          <img src="11.jpeg" alt="Memory 11">
+        </div>
+        <div class="text-container">
+          <p>One of my favourite pictures you sent me btw cause look at that smile, baby..It assures me that everything is okay and melts my heart into a puddle.</p>
+        </div>
+      </div>
+      
+      <div class="page back" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">11</div>
+        <div class="image-container">
+          <img src="12.jpeg" alt="Memory 12">
+        </div>
+        <div class="text-container">
+          <p>My baby, mi shayla be getting the zoomiessssssssss</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAF 8 -->
+    <div class="leaf">
+      <div class="page front" style="background-image:url('OLD PAPER.jpeg');">
+        <div class="pageNumber">12</div>
+        <div class="image-container">
+          <img src="last replace.jpeg" alt="Memory 13">
+        </div>
+        <div class="text-container">
+          <p>And of courseeeeee I see you in my most favourite flower, you're my sunflower and yk how there's a theory stating that always give two sunflowers cause one faces the sun and the other one faces the sunflower which faces the sun..I am the other sunflower facing you..</p>
+        </div>
+      </div>
+      
+      <div class="page back external" style="background-image:url('BOOK COVER.jpg');">
+        <div class="image-container"></div>
+        <div class="text-container"></div>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="controls centered">
+    <button id="prevPage">Previous</button>
+    <!-- CHANGED BUTTON TEXT HERE -->
+    <button id="rightButton" class="hidden">final page</button>
+    <button id="nextPage">Next</button>
+  </div>
+
+  <script>
+    class FlipBook {
+      constructor(bookElem) {
+        this.elems = {
+          book: bookElem,
+          leaves: bookElem.querySelectorAll(".leaf"),
+          buttons: {
+            next: document.getElementById("nextPage"),
+            prev: document.getElementById("prevPage")
+          }
+        };
+        this.setupEvents();
+        this.currentPagePosition = 0;
+        this.turnPage(0);
+      }
+
+      setPagePosition(page, position, index) {
+        var transform = "translate3d(0,0," + ((position < 0 ? 1 : -1) * Math.abs(index)) + "px)";
+        if (position < 0) {
+          transform += "rotate3d(0,1,0,-180deg)";
+          page.classList.add("turned");
+        } else {
+          page.classList.remove("turned");
+        }
+        if (page.style.transform != transform) {
+          page.style.transform = transform;
+        }
+      }
+
+      turnPage(delta) {
+        this.currentPagePosition += delta;
+        if (this.currentPagePosition < 0) { this.currentPagePosition = 0; return; }
+        if (this.currentPagePosition > this.elems.leaves.length) { this.currentPagePosition = this.elems.leaves.length; return; }
+        this.elems.leaves.forEach((page, index) => {
+          this.setPagePosition(page, index - this.currentPagePosition, index);
+        });
+        this.updateButtonStates();
+      }
+
+      updateButtonStates() {
+        this.elems.buttons.prev.disabled = this.currentPagePosition === 0;
+        this.elems.buttons.next.disabled = this.currentPagePosition === this.elems.leaves.length;
+        this.toggleExternalButton();
+      }
+
+      toggleExternalButton() {
+        const shouldShowRightButton = this.currentPagePosition === this.elems.leaves.length;
+        const rightButton = document.getElementById('rightButton');
+        if (shouldShowRightButton) { rightButton.classList.remove('hidden'); } else { rightButton.classList.add('hidden'); }
+      }
+
+      setupEvents() {
+        this.elems.buttons.next.addEventListener("click", () => { this.turnPage(1); });
+        this.elems.buttons.prev.addEventListener("click", () => { this.turnPage(-1); });
+        
+       
+        document.getElementById("rightButton").addEventListener("click", () => {
+          window.location.href = "finalpage.html";
+        });
+      }
+    }
+
+    const flipBook = new FlipBook(document.getElementById("flipbook"));
+  </script>
+</body>
+</html>

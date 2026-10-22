@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Small Gift For You</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Cinzel+Decorative:wght@700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Your purple background */
+      background-image: url('purple bg 2.jpeg'); 
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'EB Garamond', serif;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* The Pop-up Box */
+    .popup-box {
+      background: rgba(16, 5, 22, 0.6); /* Deep purple tint */
+      border: 2px solid rgba(232, 201, 106, 0.4); /* Soft gold border */
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      text-align: center;
+      color: #fff8f0;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(232, 201, 106, 0.1);
+      
+      /* Pop-up Animation */
+      opacity: 0;
+      transform: scale(0.8) translateY(20px);
+      animation: popUp 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes popUp {
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .box-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 28px;
+      color: #e8c96a;
+      margin-bottom: 25px;
+      text-shadow: 0 2px 10px rgba(232, 201, 106, 0.4);
+    }
+
+    .box-text {
+      font-size: 18px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .highlight {
+      color: #e8c96a;
+      font-style: italic;
+      font-size: 20px;
+      display: block;
+      margin-top: 25px;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(232, 201, 106, 0.3);
+    }
+
+    /* Button */
+    .restart-btn {
+      display: inline-block;
+      margin-top: 35px;
+      padding: 12px 30px;
+      background: transparent;
+      color: #e8c96a;
+      border: 2px solid #e8c96a;
+      border-radius: 50px;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .restart-btn:hover {
+      background: #e8c96a;
+      color: #1c1509;
+      box-shadow: 0 0 20px rgba(232, 201, 106, 0.6);
+      transform: translateY(-3px);
+    }
+
+    /* Responsive adjustments for phones */
+    @media (max-width: 480px) {
+      .popup-box {
+        padding: 30px 20px;
+      }
+      .box-title {
+        font-size: 22px;
+      }
+      .box-text {
+        font-size: 16px;
+      }
+      .highlight {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="popup-box">
+    <h1 class="box-title">A Small Gift</h1>
+    
+    <p class="box-text">
+      I couldn't create much but i really hope you liked this smol gift of yours. 
+      This was just an attempt of expressing my love for you but as you know that 
+      no words no website can actually explain how much i love you..
+    </p>
+
+    <span class="highlight">Happy Birthday my love..<br>Ami tomake onek bhalobashi</span>
+
+    
+    <a href="loginoct.html" class="restart-btn">✦ Start Over ✦</a>
+  </div>
+
+</body>
+</html>
